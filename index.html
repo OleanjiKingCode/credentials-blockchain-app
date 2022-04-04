@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My First dApp</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" 
+    integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <style>
+        body {
+          text-align: center;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+      
+        div {
+      margin-top: 60px;
+      
+        }
+      input{
+        height: 150px;
+        width: 400px;
+      }
+        button {
+          width: 50%;
+          margin: 40px 0px 5px 40px;
+          padding:20px;
+        }
+      </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+        <h1>This is a credential keeping  dApp!</h1>
+        <p>Where you can put in and see your information</p>
+        <div class="row">
+          <div class="col-md-6">
+            <label for="credential">Write in what you wanna keep:</label> <br />
+          <input type="text" id="credential"/>
+        
+          <button onclick="setCredential()">Upload credentials to the blockchain</button>
+          </div>
+          
+          <div class="col-md-6">
+           
+          <button onclick="getCredential()">Get back your credentials </button>
+          </div>
+        </div>
+       
+      
+      </div>
+<script
+  src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
+  type="application/javascript"
+></script>
+
+<script>
+   const  CreContractAddress = "0x6727Cc99d283B52bDA0c3CE2E760562Ba9E942dd";
+  const CreContractABI = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "getCredential",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_credential",
+				"type": "string"
+			}
+		],
+		"name": "setCredential",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
+  let CreContract;
+  let signer;
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum, "ropsten");
+  provider.send("eth_requestAccounts", []).then(() => {
+  provider.listAccounts().then((accounts) => {
+    signer = provider.getSigner(accounts[0]);
+    CreContract = new ethers.Contract(
+      CreContractAddress,
+      CreContractABI,
+      signer
+    );
+  });
+});
+
+async function getCredential() {
+  const getcredentials = CreContract.getCredential();
+  const credentials = await getcredentials;
+
+
+  
+
+
+  console.log(credentials);
+  alert(credentials);
+}
+
+async function setCredential() {
+  
+  const credentials= document.getElementById("credential").value;
+  const setcre = CreContract.setCredential(credentials);
+  const credentialse= document.getElementById("credential");
+  credentialse.value=" ";
+  await setcre;
+}
+
+</script>
+  </body>
+</html>
